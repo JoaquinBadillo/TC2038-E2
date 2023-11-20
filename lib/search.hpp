@@ -4,7 +4,7 @@
 #include "./utils.hpp"
 
 namespace p3 {
-    template<std::size_t n> void closest(utils::AdjMatrix<n> adj_matrix);
+    void closest(utils::AdjMatrix adj_matrix);
 }
 
 

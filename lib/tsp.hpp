@@ -4,7 +4,7 @@
 #include "./utils.hpp"
 
 namespace p2 {
-    template<std::size_t n> void tsp(utils::AdjMatrix<n> adj_matrix);
+    void tsp(const utils::AdjMatrix& adj_matrix);
 }
 
 #endif
