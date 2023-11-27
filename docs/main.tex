@@ -6,7 +6,7 @@
 \usepackage{listings}
 \usepackage{xcolor}
 
-\usepackage[left=1.5cm, right=2cm]{geometry}
+\usepackage[left=2cm, right=2cm, top=2cm, bottom=2.5cm]{geometry}
 
 \renewcommand{\lstlistingname}{Implementación}
 
@@ -45,63 +45,65 @@
 
 \hypersetup{
     colorlinks=true,
-    linkcolor=cyan,
+    linkcolor=blue,
     filecolor=magenta,      
-    urlcolor=cyan,
+    urlcolor=blue,
 }
 
 \begin{document}
   \begin{titlepage}
     \begin{center}    
-        \vspace{30pt}
-            \begin{LARGE}\bf{Evidencia 2}\end{LARGE}
-          
-            \vspace{40pt}
-    
-            TC2038: Análisis y diseño de algoritmos avanzados\\
-            Grupo 601\\
-            
-            \vspace{120pt}
+      \vspace{30pt}
+      
+      \begin{LARGE}\bf{Evidencia 2}\end{LARGE}
+      
+      \vspace{40pt}
 
-            % TEAM MEMBERS
-            \begin{multicols}{3}
-              \textbf{Alejandro Arouesty}\\
-              Tec de Monterrey,\\
-              Campus Santa Fe\\
-              \href{mailto:a01782691@tec.mx}{a01782691@tec.mx}
-              
-              \columnbreak
+      TC2038: Análisis y diseño de algoritmos avanzados\\
+      Grupo 601\\
+        
+      \vspace{120pt}
 
-              \textbf{Andrés Tarazona}\\
-              Tec de Monterrey,\\
-              Campus Santa Fe\\
-              \href{mailto:a01023332@tec.mx}{a01023332@tec.mx}
-              
-              \columnbreak
+      % TEAM MEMBERS
+      \begin{multicols}{3}
+        \textbf{Alejandro Arouesty}\\
+        Tec de Monterrey,\\
+        Campus Santa Fe\\
+        \href{mailto:a01782691@tec.mx}{a01782691@tec.mx}
+        
+        \columnbreak
 
-              \textbf{Joaquín Badillo}\\
-              Tec de Monterrey,\\
-              Campus Santa Fe\\
-              \href{mailto:a01026364@tec.mx}{a01026364@tec.mx}
-            \end{multicols}
-            
-            \vspace{100pt}
-            
-            \textbf{Bajo la instrucción de} \\
-            Víctor de la Cueva\\
-            
-            
-            \vspace{120pt}
-            
-            30 de Noviembre de 2023
-        \end{center}
-    \end{titlepage}
-    \pagebreak
+        \textbf{Andrés Tarazona}\\
+        Tec de Monterrey,\\
+        Campus Santa Fe\\
+        \href{mailto:a01023332@tec.mx}{a01023332@tec.mx}
+        
+        \columnbreak
 
-    \section{Reflexión}
-    \subsection{Árbol de Expansión Mínima (MST)}
-    % Algoritmo
-    \begin{lstlisting}[language=cpp, caption={Algoritmo de Prim}, label={lst:prim}]
+        \textbf{Joaquín Badillo}\\
+        Tec de Monterrey,\\
+        Campus Santa Fe\\
+        \href{mailto:a01026364@tec.mx}{a01026364@tec.mx}
+      \end{multicols}
+      
+      \vspace{100pt}
+      
+      \textbf{Bajo la instrucción de} \\
+      Víctor de la Cueva\\
+      
+      
+      \vspace{120pt}
+      
+      30 de Noviembre de 2023
+    \end{center}
+  \end{titlepage}
+  \pagebreak
+
+  \section{Reflexión}
+  \subsection{Árbol de Expansión Mínima (MST)}
+
+  % Algoritmo
+  \begin{lstlisting}[language=cpp, caption={Algoritmo de Prim}, label={lst:prim}]
 void mst(const utils::AdjMatrix& adj_matrix) {
   MinHeap pq;
   std::unordered_set<int> permanent;
@@ -141,28 +143,63 @@ void mst(const utils::AdjMatrix& adj_matrix) {
 
   std::cout << std::endl;
 }
-    \end{lstlisting}
+  \end{lstlisting}
 
-    El algoritmo de Prim, el cual fue implementado como se muestra en la \autoref{lst:prim}
-    nos permite encontrar el árbol de expansión mínima de un grafo no dirigido y ponderado.
-    Es decir, el conjunto de aristas que conectan todos los vértices del grafo con el menor
-    costo posible. Este algoritmo es muy similar al algoritmo de Dijkstra, con una variación 
-    en la función de costos, mientras que Dijkstra acumula el costo (puesto que busca un camino),
-    el algoritmo de Prim solo utiliza el costo de la arista actual.
-    
-    El algoritmo de Prim es un algoritmo voraz, es decir, en cada iteración toma la mejor decisión
-    local y si los costos son positivos, el algoritmo siempre encontrará el árbol de expansión mínima.
-    Como se estaba buscando una forma de conectar múltiples centrales, de tal manera que existiera un camino
-    entre cualesquiera dos centrales y minimizar el uso de fibra óptica, el algoritmo de Prim resulta ser
-    eficiente y correcto, dado que las distancias son
+  El algoritmo de Prim, el cual fue implementado como se muestra en la \autoref{lst:prim}
+  nos permite encontrar el árbol de expansión mínima de un grafo no dirigido y ponderado.
+  Es decir, el conjunto de aristas que conectan todos los vértices del grafo con el menor
+  costo posible. Este algoritmo es muy similar al algoritmo de Dijkstra, con una variación 
+  en la función de costos, mientras que Dijkstra acumula el costo (puesto que busca un camino),
+  el algoritmo de Prim solo utiliza el costo de la arista actual.
+  
+  El algoritmo de Prim es un algoritmo voraz, es decir, en cada iteración toma la mejor decisión
+  local y si los costos son positivos, el algoritmo siempre encontrará el árbol de expansión mínima.
+  Como se estaba buscando una forma de conectar múltiples centrales, de tal manera que existiera un camino
+  entre cualesquiera dos centrales y minimizar el uso de fibra óptica, el algoritmo de Prim resulta ser
+  eficiente y correcto, dado que las distancias son estrictamente positivas.
 
-    \subsubsection{Complejidad Computacional}
-    La complejidad computacional del algoritmo de Prim es de $\mathcal{O}(E\log V)$, donde $E$ es el número de aristas
-    y $V$ es el número de vértices. Esto se debe a que el algoritmo utiliza un min-heap para obtener la arista
-    de menor costo en cada iteración. 
-    
-    Como la inserción al min-heap tiene una complejidad en timepo $\mathcal{O}(\log V)$ para insertar un elemento y para extraer el mínimo. 
-    En el peor escenario se puede considerar un min-heap que contiene todas las aristas del grafo, que como sugiere la matriz de adyacencia
-    son $\mathcal{O}(V^2)$ aristas. Por lo tanto, la complejidad computacional del algoritmo de Prim es 
-    $$\mathcal{O}(E\log V^{2}) = \mathcal{O}(2E\log V) = \mathcal{O}(E\log V) \quad \blacksquare$$.
+  \subsubsection{Complejidad Computacional}
+  La complejidad computacional del algoritmo de Prim es de $\mathcal{O}(E\log V)$, donde $E$ es el número de aristas
+  y $V$ es el número de vértices. Esto se debe a que el algoritmo utiliza un min-heap para obtener la arista
+  de menor costo en cada iteración. 
+  
+  Como la inserción de un elemento a un min-heap de tamaño $N$ tiene una complejidad en timepo $\mathcal{O}(\log N)$, al igual que para extraer el mínimo. 
+  En el peor escenario se puede considerar un min-heap que contiene todas las aristas del grafo, que como sugiere la matriz de adyacencia
+  son $\mathcal{O}(V^2)$ aristas. Por lo tanto, la complejidad computacional del algoritmo de Prim es 
+  $$\mathcal{O}(E\log V^{2}) = \mathcal{O}(2E\log V) = \mathcal{O}(E\log V) \quad \blacksquare$$.
+
+  \subsection{Problema del Agente Viajero (TSP)}
+
+  El problema del agente viajero es un problema de optimización que consiste en encontrar un camino que recorra todos los vértices de un nodo y regrese al inicio,
+  de tal manera que el costo total del camino sea mínimo. Se ha demostrado que este problema es NP-Díficl, es decir que es \textbf{al menos} tan difícil como cualquier otro problema en NP.
+  La implicación que es de nuestro interés de tal demostración es que no se conoce un algoritmo para una máquina determinística que lo resuelva en tiempo polinomial (además de que su existencia 
+  es poco probable) y por lo tanto para grafos suficientemente grandes es virtualmente insoluble.
+
+  Debido a este contexto, si es de vital importancia resolver el problema del agente viajero de forma exacta, se debe recurrir a los algoritmos de búsqueda y aunque su orden en el peor escenario 
+  sea al menos exponencial, el uso de heurísticas puede reducir el tiempo de ejecución promedio considerablemente. Por esta razón, en la implementación \autoref{lst:tsp} se utilizó la técnica de
+  \textit{Branch and Bound} para reducir el espacio de búsqueda.
+
+  % Implementación TSP
+  \begin{lstlisting}[language=cpp, caption={Branch and Bound para TSP}, label={lst:tsp}]
+// TODO
+  \end{lstlisting}
+
+  \subsubsection{Complejidad Computacional}
+
+  \subsection{Distancia Más Cercana}
+  El último problema que se abordó fue el de encontrar la ubicación de la central más cercana para una instalación nueva. El problema de asociar puntos (o vectores) a partir de su distancia 
+  es de hecho de gran interés para la computación moderna, ya que las emergentes tendencias por la adoptación de la inteligencia artificial y el aprendizaje automático se han visto beneficiados
+  por la indexación de datos de acuerdo con su cercanía en un espacio vectorial, como se puede observar con las bases de datos de vectores (\textit{embeddings}). 
+  
+  La búsqueda por cercanía en un contexto geográfico también resulta interesante en servicios de mapas y en el \textit{marketing} ya que es mucho más probable que para una persona, un producto o 
+  servicio sea más atractivo si se encuentra cerca de su ubicación. De hecho aunque en esta situación se utilizó la norma $L^{2}$ (o distancia euclideana) para determinar la cercanía entre dos puntos
+  (ver \autoref{lst:nn}), si consideramos las ubicaciones en la Tierra, dicha norma podría implicar atravesar la superficie terrestre. Por lo tanto si se utiliza la longitud y latitud como sistema 
+  coordenado (y se considera la Tierra como una esfera ideal), la distancia de nuestro interés es en realidad la de un segmento de un círculo máximo, dado que esta es la geodésica en una esfera.
+
+    % Implementación Nearset Neighbor
+  \begin{lstlisting}[language=cpp, caption={Ubicación más cercana}, label={lst:nn}]
+// TODO
+  \end{lstlisting}
+
+  \subsubsection{Complejidad Computacional}
 \end{document}
