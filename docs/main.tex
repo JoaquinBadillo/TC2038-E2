@@ -6,7 +6,7 @@
 \usepackage{listings}
 \usepackage{xcolor}
 
-\usepackage[left=1.5cm, right=2cm]{geometry}
+\usepackage[left=2cm, right=2cm, top=2cm, bottom=2.5cm]{geometry}
 
 \renewcommand{\lstlistingname}{Implementación}
 
@@ -154,14 +154,14 @@ void mst(const utils::AdjMatrix& adj_matrix) {
     local y si los costos son positivos, el algoritmo siempre encontrará el árbol de expansión mínima.
     Como se estaba buscando una forma de conectar múltiples centrales, de tal manera que existiera un camino
     entre cualesquiera dos centrales y minimizar el uso de fibra óptica, el algoritmo de Prim resulta ser
-    eficiente y correcto, dado que las distancias son
+    eficiente y correcto, dado que las distancias son estrictamente positivas.
 
     \subsubsection{Complejidad Computacional}
     La complejidad computacional del algoritmo de Prim es de $\mathcal{O}(E\log V)$, donde $E$ es el número de aristas
     y $V$ es el número de vértices. Esto se debe a que el algoritmo utiliza un min-heap para obtener la arista
     de menor costo en cada iteración. 
     
-    Como la inserción al min-heap tiene una complejidad en timepo $\mathcal{O}(\log V)$ para insertar un elemento y para extraer el mínimo. 
+    Como la inserción de un elemento a un min-heap de tamaño $N$ tiene una complejidad en timepo $\mathcal{O}(\log N)$, al igual que para extraer el mínimo. 
     En el peor escenario se puede considerar un min-heap que contiene todas las aristas del grafo, que como sugiere la matriz de adyacencia
     son $\mathcal{O}(V^2)$ aristas. Por lo tanto, la complejidad computacional del algoritmo de Prim es 
     $$\mathcal{O}(E\log V^{2}) = \mathcal{O}(2E\log V) = \mathcal{O}(E\log V) \quad \blacksquare$$.
