@@ -5,6 +5,7 @@
 
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage{graphicx}
 
 \usepackage[left=2cm, right=2cm, top=2cm, bottom=2.5cm]{geometry}
 
@@ -53,8 +54,10 @@
 \begin{document}
   \begin{titlepage}
     \begin{center}    
-      \vspace{30pt}
+      \includegraphics[width=0.75\textwidth]{./img/logo-tec.png}
       
+      \vspace{30pt}
+
       \begin{LARGE}\bf{Evidencia 2}\end{LARGE}
       
       \vspace{40pt}
@@ -92,7 +95,7 @@
       Víctor de la Cueva\\
       
       
-      \vspace{120pt}
+      \vspace{80pt}
       
       30 de Noviembre de 2023
     \end{center}
@@ -176,7 +179,7 @@ void mst(const utils::AdjMatrix& adj_matrix) {
   es poco probable) y por lo tanto para grafos suficientemente grandes es virtualmente insoluble.
 
   Debido a este contexto, si es de vital importancia resolver el problema del agente viajero de forma exacta, se debe recurrir a los algoritmos de búsqueda y aunque su orden en el peor escenario 
-  sea al menos exponencial, el uso de heurísticas puede reducir el tiempo de ejecución promedio considerablemente. Por esta razón, en la implementación \autoref{lst:tsp} se utilizó la técnica de
+  sea al menos exponencial, el uso de heurísticas puede reducir el tiempo de ejecución promedio considerablemente. Por esta razón, en la \autoref{lst:tsp} se utilizó la técnica de
   \textit{Branch and Bound} para reducir el espacio de búsqueda.
 
   % Implementación TSP
