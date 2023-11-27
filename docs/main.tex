@@ -1,0 +1,168 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath,amssymb,amsthm,amsfonts}
+\usepackage{hyperref}
+\usepackage{multicol}
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+\usepackage[left=1.5cm, right=2cm]{geometry}
+
+\renewcommand{\lstlistingname}{Implementación}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{dred}{rgb}{0.545,0,0}
+\definecolor{dblue}{rgb}{0,0,0.545}
+\definecolor{lgrey}{rgb}{0.9,0.9,0.9}
+\definecolor{gray}{rgb}{0.4,0.4,0.4}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.6}
+\lstdefinelanguage{cpp}{
+      backgroundcolor=\color{lgrey},  
+      basicstyle=\footnotesize \ttfamily \color{black} \bfseries,   
+      breakatwhitespace=false,       
+      breaklines=true,               
+      captionpos=b,                   
+      commentstyle=\color{dkgreen},   
+      deletekeywords={...},          
+      escapeinside={\%*}{*)},                  
+      frame=single,                  
+      language=C++,                
+      keywordstyle=\color{purple},  
+      morekeywords={BRIEFDescriptorConfig,string,TiXmlNode,DetectorDescriptorConfigContainer,istringstream,cerr,exit,MinHeap}, 
+      identifierstyle=\color{black},
+      stringstyle=\color{blue},      
+      numbers=left,                 
+      numbersep=5pt,                  
+      numberstyle=\tiny\color{black}, 
+      rulecolor=\color{black},        
+      showspaces=false,               
+      showstringspaces=false,        
+      showtabs=false,                
+      stepnumber=1,                   
+      tabsize=5,                     
+      title=\lstname,                 
+    }
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=cyan,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+\begin{document}
+  \begin{titlepage}
+    \begin{center}    
+        \vspace{30pt}
+            \begin{LARGE}\bf{Evidencia 2}\end{LARGE}
+          
+            \vspace{40pt}
+    
+            TC2038: Análisis y diseño de algoritmos avanzados\\
+            Grupo 601\\
+            
+            \vspace{120pt}
+
+            % TEAM MEMBERS
+            \begin{multicols}{3}
+              \textbf{Alejandro Arouesty}\\
+              Tec de Monterrey,\\
+              Campus Santa Fe\\
+              \href{mailto:a01782691@tec.mx}{a01782691@tec.mx}
+              
+              \columnbreak
+
+              \textbf{Andrés Tarazona}\\
+              Tec de Monterrey,\\
+              Campus Santa Fe\\
+              \href{mailto:a01023332@tec.mx}{a01023332@tec.mx}
+              
+              \columnbreak
+
+              \textbf{Joaquín Badillo}\\
+              Tec de Monterrey,\\
+              Campus Santa Fe\\
+              \href{mailto:a01026364@tec.mx}{a01026364@tec.mx}
+            \end{multicols}
+            
+            \vspace{100pt}
+            
+            \textbf{Bajo la instrucción de} \\
+            Víctor de la Cueva\\
+            
+            
+            \vspace{120pt}
+            
+            30 de Noviembre de 2023
+        \end{center}
+    \end{titlepage}
+    \pagebreak
+
+    \section{Reflexión}
+    \subsection{Árbol de Expansión Mínima (MST)}
+    % Algoritmo
+    \begin{lstlisting}[language=cpp, caption={Algoritmo de Prim}, label={lst:prim}]
+void mst(const utils::AdjMatrix& adj_matrix) {
+  MinHeap pq;
+  std::unordered_set<int> permanent;
+  std::vector<Edge> mst;
+
+  pq.push({
+    .id = 0,
+    .tag = 0,
+    .weight = 0
+  });
+
+  while (!pq.empty() && mst.size() < adj_matrix.size() - 1) {
+    Edge current = pq.top();
+    pq.pop();
+
+    if (permanent.find(current.id) != permanent.end())
+      continue;
+
+    if (current.id != current.tag)
+      mst.push_back(current);
+      permanent.insert(current.id);
+
+    for (int i = 0; i < adj_matrix.size(); i++) {
+      if (i == current.id || permanent.find(i) != permanent.end())
+        continue;
+
+      pq.push({
+        .id = i,
+        .tag = current.id,
+        .weight = adj_matrix[current.id][i]
+      });
+    }
+  }
+
+  for (auto edge : mst)
+    std::cout << "("  << edge.tag << ", "  << edge.id  << ")\t";
+
+  std::cout << std::endl;
+}
+    \end{lstlisting}
+
+    El algoritmo de Prim, el cual fue implementado como se muestra en la \autoref{lst:prim}
+    nos permite encontrar el árbol de expansión mínima de un grafo no dirigido y ponderado.
+    Es decir, el conjunto de aristas que conectan todos los vértices del grafo con el menor
+    costo posible. Este algoritmo es muy similar al algoritmo de Dijkstra, con una variación 
+    en la función de costos, mientras que Dijkstra acumula el costo (puesto que busca un camino),
+    el algoritmo de Prim solo utiliza el costo de la arista actual.
+    
+    El algoritmo de Prim es un algoritmo voraz, es decir, en cada iteración toma la mejor decisión
+    local y si los costos son positivos, el algoritmo siempre encontrará el árbol de expansión mínima.
+    Como se estaba buscando una forma de conectar múltiples centrales, de tal manera que existiera un camino
+    entre cualesquiera dos centrales y minimizar el uso de fibra óptica, el algoritmo de Prim resulta ser
+    eficiente y correcto, dado que las distancias son
+
+    \subsubsection{Complejidad Computacional}
+    La complejidad computacional del algoritmo de Prim es de $\mathcal{O}(E\log V)$, donde $E$ es el número de aristas
+    y $V$ es el número de vértices. Esto se debe a que el algoritmo utiliza un min-heap para obtener la arista
+    de menor costo en cada iteración. 
+    
+    Como la inserción al min-heap tiene una complejidad en timepo $\mathcal{O}(\log V)$ para insertar un elemento y para extraer el mínimo. 
+    En el peor escenario se puede considerar un min-heap que contiene todas las aristas del grafo, que como sugiere la matriz de adyacencia
+    son $\mathcal{O}(V^2)$ aristas. Por lo tanto, la complejidad computacional del algoritmo de Prim es 
+    $$\mathcal{O}(E\log V^{2}) = \mathcal{O}(2E\log V) = \mathcal{O}(E\log V) \quad \blacksquare$$.
+\end{document}
