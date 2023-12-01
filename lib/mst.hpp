@@ -24,8 +24,11 @@ namespace p1 {
   	void mst(const utils::AdjMatrix& adj_matrix) {
     	MinHeap pq;
         std::unordered_set<int> permanent;
-		std::vector<Edge> mst;
+		
+		// A list of edges is required as output, store them
+		std::vector<Edge> mst; 
 
+		// weight organizes the heap, id (node) and tag (prev node) track edges
 		pq.push({
 			.id = 0,
 			.tag = 0,
@@ -55,7 +58,8 @@ namespace p1 {
 			}
 		}
 
-		for (auto edge : mst) {
+		// Print the MST (avoids returning the edge vector)
+		for (auto& edge : mst) {
 			std::cout << "(" 
 					  << edge.tag
 					  << ", " 
