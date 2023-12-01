@@ -56,6 +56,9 @@ namespace p2 {
         return std::make_pair(reduced, cost);
     }
 
+    /* 
+        O(V^2)
+    */
     std::pair<utils::AdjMatrix, int> reducer(utils::AdjMatrix adj_matrix, int node, int prev, int prev_cost) {
         if (adj_matrix.size() < 1)
             throw std::invalid_argument("Adjacency matrix must be at least 1x1");
