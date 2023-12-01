@@ -7,7 +7,11 @@ int main (int argc, char *argv[]) {
   utils::AdjMatrix graph = utils::read(filename);
   p1::mst(graph);
 
-  std::cout << "Running TSP..." << std::endl;
-  p2::tsp(graph, 0);
+  char start;
+  std::cout << "Enter starting node (A, B, C,...): "; 
+  std::cin >> start;
+
+  p2::tsp(graph, (int)(start) - 65);
+
   return 0;
 }

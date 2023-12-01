@@ -2,112 +2,122 @@
 #define TSP_H
 
 #include "./utils.hpp"
-#include <queue>
 #include <limits>
-#include <unordered_set>
+#include <queue>
 
-#define INF std::numeric_limits<int>::max()
+#define INT_MAX std::numeric_limits<int>::max()
 
 namespace p2 {
-    /* Auxiliary Functions */
-
-    /* Get Children
-        Returns the children in the search tree (nodes that have not been visited yet in a branch)
-        O(V)
-    */
-    std::vector<int> getChildren(const utils::AdjMatrix& adj_matrix, int node, std::unordered_set<int>& visited) {
-        std::vector<int> children;
-        for (int i = 0; i < adj_matrix.size(); ++i) {
-            if (adj_matrix[node][i] != 0 && visited.find(i) == visited.end()) {
-                children.push_back(i);
-            }
-        }
-        return children;
-    }
-
-    /* Heuristic
-    
-      Obtained from: https://www.youtube.com/watch?v=1FEP_sNb62k&ab_channel=AbdulBari
-      O(V^2)
-    */
-    int reduce(utils::AdjMatrix adj_matrix, std::unordered_set<int> visited, int node, int prev) {                
+    std::pair<utils::AdjMatrix, int> initialReducer(utils::AdjMatrix adj_matrix, int node) {
+        if (adj_matrix.size() < 1)
+            throw std::invalid_argument("Adjacency matrix must be at least 1x1");
+        
         int cost = 0;
         utils::AdjMatrix reduced = adj_matrix;
 
-        reduced[node][prev] = INF;
+        // Reduce rows 
+        for (int i = 0; i < reduced.size(); i++) {
+            int min = INT_MAX;
+            for (int j = 0; j < reduced[0].size(); j++) {
+                if (reduced[i][j] >= INT_MAX)
+                    continue;
 
-        //Reduce rows
-        for (int i = 0; i < reduced.size(); ++i) {
-            int min = INF;
-            // Ignore visited nodes (rows)
-            if (visited.find(i) != visited.end())
-                continue;
-
-            // Find minimum (without checking self)
-            for (int j = 0; j < reduced.size(); ++j) {
-                if (i != j)
-                    min = std::min(min, reduced[i][j]);
+                min = std::min(min, reduced[i][j]);
             }
 
-            // Only update if there is a valid minimum
-            if (min == INF)
-                continue;
-
-            // Update row reducing by minimum (without updating self)
-            for (int j = 0; j < reduced.size(); ++j) {
-                if (i != j && reduced[i][j] != INF)
+            if (min != INT_MAX) {
+                for (int j = 0; j < reduced.size(); j++) {
+                    if (reduced[i][j] < INT_MAX)
                     reduced[i][j] -= min;
+                }
+                cost += min;
             }
-
-            cost += min;
         }
 
-        //Reduce columns
-        for (int i = 0; i < reduced.size(); ++i) {
-            int min = INF;
-
-            // Find minimum (ignoring self and visited rows)
-            for (int j = 0; j < reduced.size(); ++j) {
-                if (i == j || visited.find(j) != visited.end())
+        // Reduce columns
+        for (int i = 0; i < reduced[0].size(); i++) {
+            int min = INT_MAX;
+            for (int j = 0; j < reduced.size(); j++) {
+                if (reduced[j][i] >= INT_MAX)
                     continue;
 
                 min = std::min(min, reduced[j][i]);
             }
 
-            // Only update if there is a valid minimum
-            if (min == INF)
-                continue;
+            if (min != INT_MAX) {
+                for (int j = 0; j < reduced[0].size(); j++) {
+                    if (reduced[j][i] < INT_MAX)
+                    reduced[j][i] -= min;
+                }
+                cost += min;
+            }
+        }
 
-            for (int j = 0; j < reduced.size(); ++j) {
-                if (i == j || visited.find(j) != visited.end() || reduced[i][j] == INF)
+        return std::make_pair(reduced, cost);
+    }
+
+    std::pair<utils::AdjMatrix, int> reducer(utils::AdjMatrix adj_matrix, int node, int prev, int prev_cost) {
+        if (adj_matrix.size() < 1)
+            throw std::invalid_argument("Adjacency matrix must be at least 1x1");
+        
+        int cost = adj_matrix[prev][node];
+        utils::AdjMatrix reduced = adj_matrix;
+
+        // Kill them all
+        for (int j = 0; j < reduced[0].size(); j++) {
+            reduced[prev][j] = INT_MAX;
+            reduced[j][node] = INT_MAX;
+        }
+
+        reduced[node][prev] = INT_MAX;
+
+        // Reduce rows 
+        for (int i = 0; i < reduced.size(); i++) {
+            int min = INT_MAX;
+            for (int j = 0; j < reduced[0].size(); j++) {
+                if (reduced[i][j] >= INT_MAX)
                     continue;
 
-                reduced[j][i] -= min;
+                min = std::min(min, reduced[i][j]);
             }
 
-            cost += min;
-        }
-
-
-        int prev_cost = prev < 0 ? 0 : reduced[prev][node];
-        std::cout << "Reduced rows and cols" << std::endl;
-
-        for (auto row : reduced) {
-            for (auto col : row) {
-                std::cout << col << " ";
+            if (min != INT_MAX) {
+                for (int j = 0; j < reduced.size(); j++) {
+                    if (reduced[i][j] < INT_MAX)
+                    reduced[i][j] -= min;
+                }
+                cost += min;
             }
-            std::cout << std::endl;
         }
 
-        return cost;
+        // Reduce columns
+        for (int i = 0; i < reduced[0].size(); i++) {
+            int min = INT_MAX;
+            for (int j = 0; j < reduced.size(); j++) {
+                if (reduced[j][i] >= INT_MAX)
+                    continue;
+
+                min = std::min(min, reduced[j][i]);
+            }
+
+            if (min != INT_MAX) {
+                for (int j = 0; j < reduced[0].size(); j++) {
+                    if (reduced[j][i] < INT_MAX)
+                    reduced[j][i] -= min;
+                }
+                cost += min;
+            }
+        }
+
+        return std::make_pair(reduced, cost + prev_cost);
     }
 
     typedef struct Element {
         int node;
         int cost;
         int level;
-        std::unordered_set<int> visited;
         utils::AdjMatrix reduced;
+        std::vector<int> path;
     } Element;
 
     struct compare {
@@ -116,56 +126,90 @@ namespace p2 {
         }
     };
 
-    void tsp(utils::AdjMatrix& adj_matrix, int start) {
-        int best = INF;
-        std::unordered_set<int> visited = {-1};
-        std::priority_queue<Element, std::vector<Element>, compare> frontier;
-        int data = reduce(adj_matrix, visited, start, -1);
-        std::cout << "Reduced" << std::endl;
+    void tsp(utils::AdjMatrix adj_matrix, int start) {
+        utils::AdjMatrix initial = adj_matrix;
+
+        for (int i = 0; i < initial.size(); i++) {
+            initial[i][i] = INT_MAX;
+        }
         
-        // utils::AdjMatrix reduced = data.first;
-        // int cost = data.second; 
+        int best = INT_MAX;
 
-        // frontier.push({
-        //     .node = start, 
-        //     .cost = cost, 
-        //     .level = 0, 
-        //     .visited = visited, 
-        //     .reduced = reduced
-        // });
+        Element bestElement = {
+            .node = -1,
+            .cost = INT_MAX,
+            .level = -1,
+            .reduced = initial,
+            .path = {}
+        };
 
-        // while (!frontier.empty() && best > frontier.top().cost) {
-        //     Element current = frontier.top();
-        //     frontier.pop();
+        std::pair<utils::AdjMatrix, int> reduced = initialReducer(initial, 0);
+        std::priority_queue<Element, std::vector<Element>, compare> pq;
+        pq.push({
+            .node = start,
+            .cost = reduced.second,
+            .level = 0,
+            .reduced = reduced.first,
+            .path = {start}
+        });
 
-        //     if (current.level == adj_matrix.size() - 1) {
-        //         if (current.cost + adj_matrix[current.node][start] < best) {
-        //             best = current.cost + adj_matrix[current.node][start];
-        //             std::cout << "Best: " << best << std::endl;
-        //         }
-        //         continue;
-        //     }
+        while(!pq.empty() && pq.top().cost < best) {
+            Element current = pq.top();
+            pq.pop();
 
-        //     std::vector<int> children = getChildren(current.reduced, current.node, current.visited);
+            if (current.level == adj_matrix.size() - 1) {
+                best = std::min(best, current.cost + adj_matrix[current.node][start]);
+                bestElement = current;
+                continue;
+            }
 
-        //     for (int i = 0; i < children.size(); ++i) {
-        //         std::unordered_set<int> visited = current.visited;
-        //         visited.insert(current.node);
-        //         std::pair<utils::AdjMatrix, int> data = reduce(current.reduced, visited, children[i], current.node);
-        //         utils::AdjMatrix& reduced = data.first;
-        //         int cost = data.second;
+            for (int i = 0; i < current.reduced.size(); i++) {
+                if (i == current.node)
+                    continue;
+                
+                int min = INT_MAX;
+                for (int j = 0; j < current.reduced[0].size(); j++) {
+                    if (current.reduced[i][j] >= INT_MAX)
+                        continue;
 
-        //         frontier.push({
-        //             .node = children[i], 
-        //             .cost = cost + current.cost, 
-        //             .level = current.level + 1, 
-        //             .visited = visited, 
-        //             .reduced = reduced
-        //         });
-        //     }
-        // }
+                    min = std::min(min, current.reduced[i][j]);
+                }
 
-        // std::cout << "-> Best: " << best << std::endl;
+                if (min < INT_MAX) {
+                    std::pair<utils::AdjMatrix, int> reduced = reducer(current.reduced, i, current.node, current.cost);
+                    std::vector<int> path = current.path;
+                    path.push_back(i);
+
+                    pq.push({
+                        .node = i,
+                        .cost = reduced.second,
+                        .level = current.level + 1,
+                        .reduced = reduced.first,
+                        .path = path
+                    });
+                }
+            }
+        }
+
+        int length = 0;
+        std::cout << "Path: ";
+
+        int prev = -1;
+        for (auto node : bestElement.path) {
+            if (prev != -1)
+                length += adj_matrix[prev][node];
+            
+            prev = node;
+            std::cout << (char)(node + 65) << " ";
+        }
+
+        std::cout << (char)(start + 65) << std::endl;
+
+        length += adj_matrix[prev][start];
+
+            
+        std::cout << "Length: " << length << std::endl;
+            
     }
 }
 
