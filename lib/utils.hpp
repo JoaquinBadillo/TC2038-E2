@@ -9,7 +9,7 @@
 namespace utils {
   	typedef std::vector<std::vector<int>> AdjMatrix;
 	
-  	AdjMatrix read(std::string filename) {
+  	std::pair<AdjMatrix, std::vector<std::pair<double, double>>> read(std::string filename) {
     	std::ifstream file;
       	file.open(filename);
 
@@ -39,9 +39,24 @@ namespace utils {
 				graph[i][nodes - 1] = weight;
 		}
 
+		std::vector<std::pair<double, double>> coords;
+
+		for (int i = 0; i < nodes; ++i) {
+			std::getline(file, line, '(');
+			std::getline(file, line, ',');
+
+			double x = std::stod(line);
+
+			std::getline(file, line, ')');
+			double y = std::stod(line);
+			coords.push_back(std::make_pair(x, y));
+
+			std::getline(file, line);
+		}
+
 		file.close();
 
-		return graph;
+		return {graph, coords};
   	}
 }
 

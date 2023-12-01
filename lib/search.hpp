@@ -16,17 +16,26 @@ namespace p3 {
     }
 
  
-    std::pair<int, int> findClosestPair(const std::vector<Point>& points) {
+    Point findClosestPair(const std::vector<Point>& points) {
+        std::string x_str;
+        std::cout << "Choose the x coordinate: ";
+        std::cin >> x_str;
+
+        std::string y_str;
+        std::cout << "Choose the y coordinate: ";
+        std::cin >> y_str;
+
+        Point point = std::make_pair(std::stod(x_str), std::stod(y_str));
+
+
         double minDistance = std::numeric_limits<double>::max();
-        std::pair<int, int> closestPair = {-1, -1};
+        std::pair<double, double> closestPair = {-1.0, -1.0};
 
         for (int i = 0; i < points.size(); ++i) {
-            for (int j = i + 1; j < points.size(); ++j) {
-                double distance = euclideanDistanceSquared(points[i].first, points[i].second, points[j].first, points[j].second);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closestPair = {i, j};
-                }
+            double distance = euclideanDistanceSquared(points[i].first, points[i].second, point.first, point.second);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestPair = points[i];
             }
         }
 
