@@ -169,7 +169,9 @@ void mst(const utils::AdjMatrix& adj_matrix) {
   Como la inserción de un elemento a un min-heap de tamaño $N$ tiene una complejidad en timepo $\mathcal{O}(\log N)$, al igual que para extraer el mínimo. 
   En el peor escenario se puede considerar un min-heap que contiene todas las aristas del grafo, que como sugiere la matriz de adyacencia
   son $\mathcal{O}(V^2)$ aristas. Por lo tanto, la complejidad computacional del algoritmo de Prim es 
-  $$\mathcal{O}(E\log V^{2}) = \mathcal{O}(2E\log V) = \mathcal{O}(E\log V) \quad \blacksquare$$.
+  \begin{equation}
+    \mathcal{O}(E\log V^{2}) = \mathcal{O}(2E\log V) = \mathcal{O}(E\log V) \quad \blacksquare.
+  \end{equation}
 
   \subsection{Problema del Agente Viajero (TSP)}
 
@@ -184,10 +186,109 @@ void mst(const utils::AdjMatrix& adj_matrix) {
 
   % Implementación TSP
   \begin{lstlisting}[language=cpp, caption={Branch and Bound para TSP}, label={lst:tsp}]
-// TODO
+void tsp(utils::AdjMatrix adj_matrix, int start) {
+  utils::AdjMatrix initial = adj_matrix;
+
+  for (int i = 0; i < initial.size(); i++) {
+      initial[i][i] = INT_MAX;
+  }
+  
+  int best = INT_MAX;
+
+  Element bestElement = {
+      .node = -1,
+      .cost = INT_MAX,
+      .level = -1,
+      .reduced = initial,
+      .path = {}
+  };
+
+  std::pair<utils::AdjMatrix, int> reduced = initialReducer(initial, 0);
+  std::priority_queue<Element, std::vector<Element>, compare> pq;
+  pq.push({
+      .node = start,
+      .cost = reduced.second,
+      .level = 0,
+      .reduced = reduced.first,
+      .path = {start}
+  });
+
+  while(!pq.empty() && pq.top().cost < best) {
+      Element current = pq.top();
+      pq.pop();
+
+      if (current.level == adj_matrix.size() - 1) {
+          best = std::min(best, current.cost + adj_matrix[current.node][start]);
+          bestElement = current;
+          continue;
+      }
+
+      for (int i = 0; i < current.reduced.size(); i++) {
+          if (i == current.node)
+              continue;
+          
+          int min = INT_MAX;
+          for (int j = 0; j < current.reduced[0].size(); j++) {
+              if (current.reduced[i][j] >= INT_MAX)
+                  continue;
+
+              min = std::min(min, current.reduced[i][j]);
+          }
+
+          if (min < INT_MAX) {
+              std::pair<utils::AdjMatrix, int> reduced = reducer(current.reduced, i, current.node, current.cost);
+              std::vector<int> path = current.path;
+              path.push_back(i);
+
+              pq.push({
+                  .node = i,
+                  .cost = reduced.second,
+                  .level = current.level + 1,
+                  .reduced = reduced.first,
+                  .path = path
+              });
+          }
+      }
+  }
+
+  int length = 0;
+  std::cout << "Path: ";
+
+  int prev = -1;
+  for (auto node : bestElement.path) {
+      if (prev != -1)
+          length += adj_matrix[prev][node];
+      
+      prev = node;
+      std::cout << (char)(node + 65) << " ";
+  }
+
+  std::cout << (char)(start + 65) << std::endl;
+
+  length += adj_matrix[prev][start];
+
+      
+  std::cout << "Length: " << length << std::endl;
+      
+}
   \end{lstlisting}
 
   \subsubsection{Complejidad Computacional}
+  En el peor escenario, se puede considerar que en la cola de prioridad están todos
+  los nodos del árbol de búsqueda. Como este árbol en cada nivel reduce en 1 elemento 
+  la cantidad de hijos, por el principio de conteo se deduce que tiene $n!$ nodos. Por lo tanto,
+  asíntóticamente el ciclo puede correr $\mathcal{O}(n!)$ veces. En cada una de estas interaciones
+  se calcula la heurísitca reduciendo una matriz, lo cual tiene una complejidad $\mathcal{O}(n^2)$ dado que se tiene
+  una matriz de adyacencia y se obtiene un elemento del heap lo cual tiene complejidad $\lg(n!)$.
+
+  Por lo tanto, aunque branch and bound en promedio tendrá una ejecución muy rápdia, en el peor escenario
+  su complejidad será
+  \begin{equation}
+    \mathcal{O}\left(\lg(n!) + n^2\right) \cdot n!
+  \end{equation}
+
+  Por lo que se mencionó en clase, resulta interesante utilizar una máscara de bits y programación dinámica en una futura
+  implementación.
 
   \subsection{Distancia Más Cercana}
   El último problema que se abordó fue el de encontrar la ubicación de la central más cercana para una instalación nueva. El problema de asociar puntos (o vectores) a partir de su distancia 
@@ -195,14 +296,45 @@ void mst(const utils::AdjMatrix& adj_matrix) {
   por la indexación de datos de acuerdo con su cercanía en un espacio vectorial, como se puede observar con las bases de datos de vectores (\textit{embeddings}). 
   
   La búsqueda por cercanía en un contexto geográfico también resulta interesante en servicios de mapas y en el \textit{marketing} ya que es mucho más probable que para una persona, un producto o 
-  servicio sea más atractivo si se encuentra cerca de su ubicación. De hecho aunque en esta situación se utilizó la norma $L^{2}$ (o distancia euclideana) para determinar la cercanía entre dos puntos
-  (ver \autoref{lst:nn}), si consideramos las ubicaciones en la Tierra, dicha norma podría implicar atravesar la superficie terrestre. Por lo tanto si se utiliza la longitud y latitud como sistema 
+  servicio sea más atractivo si se encuentra cerca de su ubicación. De hecho aunque en esta situación se utilizó la norma $L^{2}$ (o distancia euclideana) para determinar la cercanía entre dos puntos, 
+  si consideramos las ubicaciones en la Tierra, dicha norma podría implicar atravesar la superficie terrestre. Por lo tanto si se utiliza la longitud y latitud como sistema 
   coordenado (y se considera la Tierra como una esfera ideal), la distancia de nuestro interés es en realidad la de un segmento de un círculo máximo, dado que esta es la geodésica en una esfera.
 
     % Implementación Nearset Neighbor
   \begin{lstlisting}[language=cpp, caption={Ubicación más cercana}, label={lst:nn}]
-// TODO
+Point findClosestPair(const std::vector<Point>& points) {
+  std::string x_str;
+  std::cout << "Choose the x coordinate: ";
+  std::cin >> x_str;
+
+  std::string y_str;
+  std::cout << "Choose the y coordinate: ";
+  std::cin >> y_str;
+
+  Point point = std::make_pair(std::stod(x_str), std::stod(y_str));
+
+
+  double minDistance = std::numeric_limits<double>::max();
+  std::pair<double, double> closestPair = {-1.0, -1.0};
+
+  for (int i = 0; i < points.size(); ++i) {
+      double distance = euclideanDistanceSquared(points[i].first, points[i].second, point.first, point.second);
+      if (distance < minDistance) {
+          minDistance = distance;
+          closestPair = points[i];
+      }
+  }
+
+  return closestPair;
+}
   \end{lstlisting}
 
   \subsubsection{Complejidad Computacional}
+  Para ahorrar el trabajo computacional de la raíz cuadrada, se uso la norma euclideana al cuadrado ya
+  que es monotónicamente creciente y $d_{1}(x, y)^2 >=d_{2}(x, y)^2 \implies d_{1}(x, y) >=d_{2}(x, y)$ y por
+  lo tanto es una métrica igual de válida. Por lo tanto la complejidad de esta función se reduce a hacer una búsqueda
+  lineal en el arreglo de puntos, lo cual tiene una complejidad.
+  \begin{equation}
+    \mathcal{O}(n)
+  \end{equation}
 \end{document}
