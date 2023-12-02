@@ -208,10 +208,10 @@ namespace p2 {
             if (prev != -1)
                 length += adj_matrix[prev][node];
             prev = node;
-            std::cout << dynamic_cast<char>(node + 65) << " ";
+            std::cout << (char)(node + 65) << " ";
         }
 
-        std::cout << dynamic_cast<char>(start + 65) << std::endl;
+        std::cout << (char)(start + 65) << std::endl;
 
         length += adj_matrix[prev][start];
 
