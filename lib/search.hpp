@@ -5,17 +5,16 @@
 #include <iostream>
 #include <vector>
 #include <limits>
+#include <string>
+#include <utility>
 
 namespace p3 {
+    typedef std::pair<double, double> Point;
 
-    typedef std::pair<double, double> Point; 
-
- 
     double euclideanDistanceSquared(double x1, double y1, double x2, double y2) {
         return (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
     }
 
- 
     Point findClosestPair(const std::vector<Point>& points) {
         std::string x_str;
         std::cout << "Choose the x coordinate: ";
@@ -40,25 +39,6 @@ namespace p3 {
         }
 
         return closestPair;
-    }
-
-    
-    void findAndPrintClosestPair(int numberOfNodes) {
-        std::vector<Point> points(numberOfNodes);
-
-
-        for (int i = 0; i < numberOfNodes; ++i) {
-            std::cout << "Enter coordinates for node " << i << " (format: x y): ";
-            std::cin >> points[i].first >> points[i].second;
-        }
-
-        
-        std::pair<int, int> closestPair = findClosestPair(points);
-
-        
-        std::cout << "Closest pair of points: Node " << closestPair.first 
-                  << " (" << points[closestPair.first].first << ", " << points[closestPair.first].second << ") and Node " 
-                  << closestPair.second << " (" << points[closestPair.second].first << ", " << points[closestPair.second].second << ")" << std::endl;
     }
 }
 

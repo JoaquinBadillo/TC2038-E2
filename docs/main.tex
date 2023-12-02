@@ -148,7 +148,7 @@ void mst(const utils::AdjMatrix& adj_matrix) {
 }
   \end{lstlisting}
 
-  El algoritmo de Prim, el cual fue implementado como se muestra en la \autoref{lst:prim}
+  El algoritmo de Prim, el cual fue implementado como se muestra en la implementación anterior
   nos permite encontrar el árbol de expansión mínima de un grafo no dirigido y ponderado.
   Es decir, el conjunto de aristas que conectan todos los vértices del grafo con el menor
   costo posible. Este algoritmo es muy similar al algoritmo de Dijkstra, con una variación 
@@ -181,7 +181,7 @@ void mst(const utils::AdjMatrix& adj_matrix) {
   es poco probable) y por lo tanto para grafos suficientemente grandes es virtualmente insoluble.
 
   Debido a este contexto, si es de vital importancia resolver el problema del agente viajero de forma exacta, se debe recurrir a los algoritmos de búsqueda y aunque su orden en el peor escenario 
-  sea al menos exponencial, el uso de heurísticas puede reducir el tiempo de ejecución promedio considerablemente. Por esta razón, en la \autoref{lst:tsp} se utilizó la técnica de
+  sea al menos exponencial, el uso de heurísticas puede reducir el tiempo de ejecución promedio considerablemente. Por esta razón, en la siguiente implementación se utilizó la técnica de
   \textit{Branch and Bound} para reducir el espacio de búsqueda.
 
   % Implementación TSP
@@ -284,7 +284,7 @@ void tsp(utils::AdjMatrix adj_matrix, int start) {
   Por lo tanto, aunque branch and bound en promedio tendrá una ejecución muy rápdia, en el peor escenario
   su complejidad será
   \begin{equation}
-    \mathcal{O}\left(\lg(n!) + n^2\right) \cdot n!
+    \mathcal{O}\left(\left(\lg(n!) + n^2\right) \cdot n!\right) = \mathcal{O}\left(n^2n!\right)
   \end{equation}
 
   Por lo que se mencionó en clase, resulta interesante utilizar una máscara de bits y programación dinámica en una futura
@@ -299,7 +299,7 @@ void tsp(utils::AdjMatrix adj_matrix, int start) {
   servicio sea más atractivo si se encuentra cerca de su ubicación. De hecho aunque en esta situación se utilizó la norma $L^{2}$ (o distancia euclideana) para determinar la cercanía entre dos puntos, 
   si consideramos las ubicaciones en la Tierra, dicha norma podría implicar atravesar la superficie terrestre. Por lo tanto si se utiliza la longitud y latitud como sistema 
   coordenado (y se considera la Tierra como una esfera ideal), la distancia de nuestro interés es en realidad la de un segmento de un círculo máximo, dado que esta es la geodésica en una esfera.
-
+  \newpage
     % Implementación Nearset Neighbor
   \begin{lstlisting}[language=cpp, caption={Ubicación más cercana}, label={lst:nn}]
 Point findClosestPair(const std::vector<Point>& points) {
@@ -331,7 +331,7 @@ Point findClosestPair(const std::vector<Point>& points) {
 
   \subsubsection{Complejidad Computacional}
   Para ahorrar el trabajo computacional de la raíz cuadrada, se uso la norma euclideana al cuadrado ya
-  que es monotónicamente creciente y $d_{1}(x, y)^2 >=d_{2}(x, y)^2 \implies d_{1}(x, y) >=d_{2}(x, y)$ y por
+  que es monotónicamente creciente y $d_{1}(x, y)^2 \geq d_{2}(x, y)^2 \implies d_{1}(x, y) \geq d_{2}(x, y)$ y por
   lo tanto es una métrica igual de válida. Por lo tanto la complejidad de esta función se reduce a hacer una búsqueda
   lineal en el arreglo de puntos, lo cual tiene una complejidad.
   \begin{equation}

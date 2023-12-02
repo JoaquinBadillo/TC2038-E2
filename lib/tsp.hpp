@@ -4,18 +4,22 @@
 #include "./utils.hpp"
 #include <limits>
 #include <queue>
+#include <algorithm>
+#include <vector>
 
 #define INT_MAX std::numeric_limits<int>::max()
 
 namespace p2 {
-    std::pair<utils::AdjMatrix, int> initialReducer(utils::AdjMatrix adj_matrix, int node) {
+    std::pair<utils::AdjMatrix, int> initialReducer(utils::AdjMatrix adj_matrix, 
+                                                    int node) {
         if (adj_matrix.size() < 1)
-            throw std::invalid_argument("Adjacency matrix must be at least 1x1");
-        
+            throw std::invalid_argument(
+                    "Adjacency matrix must be at least 1x1");
+
         int cost = 0;
         utils::AdjMatrix reduced = adj_matrix;
 
-        // Reduce rows 
+        // Reduce rows
         for (int i = 0; i < reduced.size(); i++) {
             int min = INT_MAX;
             for (int j = 0; j < reduced[0].size(); j++) {
@@ -60,9 +64,11 @@ namespace p2 {
         O(V^2)
     */
     std::pair<utils::AdjMatrix, int> reducer(utils::AdjMatrix adj_matrix, int node, int prev, int prev_cost) {
-        if (adj_matrix.size() < 1)
-            throw std::invalid_argument("Adjacency matrix must be at least 1x1");
-        
+        if (adj_matrix.size() < 1) {
+            throw std::invalid_argument(
+                "Adjacency matrix must be at least 1x1");
+        }
+
         int cost = adj_matrix[prev][node];
         utils::AdjMatrix reduced = adj_matrix;
 
@@ -74,7 +80,7 @@ namespace p2 {
 
         reduced[node][prev] = INT_MAX;
 
-        // Reduce rows 
+        // Reduce rows
         for (int i = 0; i < reduced.size(); i++) {
             int min = INT_MAX;
             for (int j = 0; j < reduced[0].size(); j++) {
@@ -135,7 +141,7 @@ namespace p2 {
         for (int i = 0; i < initial.size(); i++) {
             initial[i][i] = INT_MAX;
         }
-        
+
         int best = INT_MAX;
 
         Element bestElement = {
@@ -156,7 +162,7 @@ namespace p2 {
             .path = {start}
         });
 
-        while(!pq.empty() && pq.top().cost < best) {
+        while (!pq.empty() && pq.top().cost < best) {
             Element current = pq.top();
             pq.pop();
 
@@ -169,7 +175,7 @@ namespace p2 {
             for (int i = 0; i < current.reduced.size(); i++) {
                 if (i == current.node)
                     continue;
-                
+
                 int min = INT_MAX;
                 for (int j = 0; j < current.reduced[0].size(); j++) {
                     if (current.reduced[i][j] >= INT_MAX)
@@ -201,18 +207,15 @@ namespace p2 {
         for (auto node : bestElement.path) {
             if (prev != -1)
                 length += adj_matrix[prev][node];
-            
             prev = node;
-            std::cout << (char)(node + 65) << " ";
+            std::cout << dynamic_cast<char>(node + 65) << " ";
         }
 
-        std::cout << (char)(start + 65) << std::endl;
+        std::cout << dynamic_cast<char>(start + 65) << std::endl;
 
         length += adj_matrix[prev][start];
 
-            
         std::cout << "Length: " << length << std::endl;
-            
     }
 }
 
